@@ -1,0 +1,65 @@
+-- declaração dos eventos tick e cuco
+channel tick, cuco, a, fim
+channel opcao: {0..3}
+channel cadastro, consulta, remocao, terminar
+
+{-
+Comentário de bloco
+-}
+
+
+GUI = opcao?op -> if op == 0 then
+					 cadastro -> GUI
+				  else if op == 1 then
+				  		consulta -> GUI
+				  else if op == 2 then
+				        remocao -> GUI
+				  else
+				  	    terminar -> STOP
+
+
+
+datatype BEBIDA = CAFE | CHA | REFRIGERANTE
+
+channel escolhe, serve : BEBIDA
+
+MAQUINA_BEBIDA = escolhe?escolha -> serve!escolha -> MAQUINA_BEBIDA 
+
+
+-- assume que min está entre 0 e 60
+Contador(min) = if min == 60 then
+					cuco -> Contador(0)
+				else
+					tick -> Contador(min+1)
+
+-- contador definido sem if utilizando casamento de padrão
+Contador_(60) = cuco -> Contador_(0)
+Contador_(min) = tick -> Contador_(min + 1)
+
+QUEBRAR = Contador_(61)
+assert QUEBRAR :[deadlock free]
+
+assert Contador(0) :[deadlock free]
+-- verifica que ambos processos tem a mesma semântica FD
+-- FD é a semântica de falhas e divergências
+assert Contador(0) [FD= Contador_(0)
+assert Contador_(0) [FD= Contador(0)
+
+-- a afirmação a seguir é falsa
+assert Contador(58) [FD= Contador(59)
+
+
+MIN = 0 -- constante inteira
+MAX = 5 -- constante inteira
+
+channel valor : {MIN..MAX}
+
+VALORES(sum) = 	if sum <= 30 then
+							valor?v -> VALORES(sum+v)
+						else
+							STOP
+
+INIT = VALORES(0)
+
+
+

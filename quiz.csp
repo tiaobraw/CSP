@@ -1,0 +1,63 @@
+-- Declaração dos canais
+channel pergunta : {0..9} -- Perguntas de 0 a 9
+channel opcao : {'A', 'B', 'C', 'D', 'E'} -- Opções de resposta A-E
+channel resultado : Int -- Canal para exibir o resultado final
+
+-- Processo para verificar se a resposta está correta
+VERIFICA_RESPOSTA(p, r) =
+    -- Verifica se o par {p, r} corresponde a um dos elementos da lista com o gabarito
+    if ({p, r} == {0, 0}) or -- A
+       ({p, r} == {1, 1}) or -- B
+       ({p, r} == {2, 2}) or -- C
+       ({p, r} == {3, 3}) or -- D
+       ({p, r} == {4, 4}) or -- E
+       ({p, r} == {5, 0}) or -- A
+       ({p, r} == {6, 1}) or -- B
+       ({p, r} == {7, 2}) or -- C
+       ({p, r} == {8, 3}) or -- D
+       ({p, r} == {9, 4}) then -- E
+        true
+    else
+        false
+
+-- Processo para uma rodada do quiz
+QUIZ_RODADA(n, score) = 
+    if n == 5 then
+        resultado!score -> SKIP -- Exibe a pontuação final
+    else
+        pergunta?p -> -- Pergunta é enviada
+        (
+            opcao?'A' -> 
+                if VERIFICA_RESPOSTA(p, 0) then
+                    QUIZ_RODADA(n + 1, score + 1)
+                else 
+                    QUIZ_RODADA(n + 1, score)
+            []
+            opcao?'B' -> 
+                if VERIFICA_RESPOSTA(p, 1) then
+                    QUIZ_RODADA(n + 1, score + 1)
+                else 
+                    QUIZ_RODADA(n + 1, score)
+            []
+            opcao?'C' -> 
+                if VERIFICA_RESPOSTA(p, 2) then
+                    QUIZ_RODADA(n + 1, score + 1)
+                else 
+                    QUIZ_RODADA(n + 1, score)
+            []
+            opcao?'D' -> 
+                if VERIFICA_RESPOSTA(p, 3) then
+                    QUIZ_RODADA(n + 1, score + 1)
+                else 
+                    QUIZ_RODADA(n + 1, score)
+            []
+            opcao?'E' -> 
+                if VERIFICA_RESPOSTA(p, 4) then
+                    QUIZ_RODADA(n + 1, score + 1)
+                else 
+                    QUIZ_RODADA(n + 1, score)
+        )
+
+MAIN = QUIZ_RODADA(0, 0)
+-- Verificação de deadlock
+assert MAIN :[deadlock free]

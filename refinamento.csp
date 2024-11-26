@@ -1,0 +1,8 @@
+channel a,b
+
+P = a -> STOP [] b -> P
+
+Q = a -> STOP |~| b -> P
+
+assert P [T= Q
+assert P [F= Q

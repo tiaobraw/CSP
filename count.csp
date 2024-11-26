@@ -1,0 +1,7 @@
+
+channel up,down
+
+LCOUNT(L,n) =  
+  n<L & up -> LCOUNT(L,n+1)
+  []
+	n>0 & down -> LCOUNT(L,n-1)

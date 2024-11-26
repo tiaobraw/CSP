@@ -1,0 +1,52 @@
+-- Integrantes: Igor Isidoro e Sebastião Vieira
+
+-- Declaração dos canais
+channel pergunta : {0..9} -- Perguntas de 0 a 9
+channel opcao : {0..4} -- Opções de resposta
+channel resultado : Int -- Canal para exibir o resultado final
+
+-- Processo para verificar se a resposta está correta
+VERIFICA_RESPOSTA(p, r) =
+    -- Verifica se o par {p, r} corresponde a um dos elementos da lista com o gabarito
+    if ({p, r} == {0, 0}) or -- A
+       ({p, r} == {1, 1}) or -- B
+       ({p, r} == {2, 2}) or -- C
+       ({p, r} == {3, 3}) or -- D
+       ({p, r} == {4, 4}) or -- E
+       ({p, r} == {5, 0}) or -- A
+       ({p, r} == {6, 1}) or -- B
+       ({p, r} == {7, 2}) or -- C
+       ({p, r} == {8, 3}) or -- D
+       ({p, r} == {9, 4}) then -- E
+        true
+    else
+        false
+
+-- Processo que verifica se a pergunta está no conjunto de perguntas restantes
+VERIFICA_PERGUNTA(p, s) = member(p, s)
+
+-- Processo pra escolher a alternativa da pergunta
+ESCOLHE_RESPOSTA(n, p, score, s) =
+    if VERIFICA_PERGUNTA(p, s) then
+    (
+        opcao?r -> 
+            if VERIFICA_RESPOSTA(p, r) then
+                QUIZ(n + 1, score + 1, diff(s, {p}))
+            else 
+                QUIZ(n + 1, score, diff(s, {p}))
+    ) 
+    else
+        QUIZ(n, score, s)  
+    
+-- Processo que realiza 5 rodadas do quiz
+QUIZ(n, score, s) = 
+    if n == 5 then
+        resultado!score -> STOP -- Exibe a pontuação final apos 5 rodadas
+    else
+        (n < 5) & |~|p:s@pergunta.p -> ESCOLHE_RESPOSTA(n, p, score, s)
+
+-- Processo principal             
+MAIN = QUIZ(0, 0, {0..9})
+
+-- Verificação de deadlock
+assert MAIN :[deadlock free]

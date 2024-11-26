@@ -1,0 +1,36 @@
+channel umReal, doisReais -- moedas
+channel cafe, leite -- bebidas
+
+
+MAQUINA_abstrata1 = 
+umReal -> 
+	(
+		leite -> MAQUINA_abstrata1 
+		|~| 
+		umReal -> cafe -> MAQUINA_abstrata1
+	)
+	|~|
+	doisReais -> cafe -> MAQUINA_abstrata1
+
+MAQUINA_abstrata2 = 
+umReal -> 
+	(
+		leite -> MAQUINA_abstrata2 
+		[] 
+		umReal -> cafe -> MAQUINA_abstrata2
+	)
+	|~|
+	doisReais -> cafe -> MAQUINA_abstrata2
+
+MAQUINA = umReal -> 
+	(
+		leite -> MAQUINA 
+		[] 
+		umReal -> cafe -> MAQUINA
+	)
+	[]
+	doisReais -> cafe -> MAQUINA
+
+
+assert MAQUINA_abstrata1 [FD= MAQUINA_abstrata2
+assert MAQUINA_abstrata2 [FD= MAQUINA

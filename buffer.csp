@@ -1,0 +1,9 @@
+DATA = {0,1}
+channel in, out: DATA
+
+B(s,N)  = 
+	#s <  N & in?x -> B(s^<x>,N)
+    []
+    #s > 0 & out!head(s) -> B(tail(s),N)
+
+BUFFER_2 = B(<>,2)

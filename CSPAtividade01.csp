@@ -1,0 +1,46 @@
+-- Integrantes: 
+
+-- Igor Isidoro
+-- Sebastião Vieira
+
+-- Maquina de café
+-- Definição do tipo de dado para bebidas
+datatype DRINK = COFFEE | CAPPUCCINO | HOTCHOCOLATE
+
+-- Definição dos canais
+channel coin
+channel select: DRINK
+channel dispense: DRINK
+
+-- Definição do processo COFFEEMACHINE
+COFFEEMACHINE = coin -> select?d:DRINK -> dispense!d -> COFFEEMACHINE
+
+-- Verifica se o processo COFFEEMACHINE é livre de deadlock
+assert COFFEEMACHINE :[deadlock free]
+
+-- Atividades diárias
+-- Definição do tipo de dado para atividades
+datatype ACTIVITY = WAKE_UP | BREAKFAST | WORK | LUNCH | RELAX | DINNER | SLEEP
+
+-- Definição dos canais que comunicam o tipo ACTIVITY
+channel activity : ACTIVITY
+
+-- Processos para atividades diárias
+WAKE_UP_PROCESS = activity!WAKE_UP -> SKIP
+BREAKFAST_PROCESS = activity!BREAKFAST -> SKIP
+WORK_PROCESS = activity!WORK -> SKIP
+LUNCH_PROCESS = activity!LUNCH -> SKIP
+RELAX_PROCESS = activity!RELAX -> SKIP
+DINNER_PROCESS = activity!DINNER -> SKIP
+SLEEP_PROCESS = activity!SLEEP -> SKIP
+
+-- Processo comum para os dias da semana
+DAY_PROCESS = WAKE_UP_PROCESS ; BREAKFAST_PROCESS ; WORK_PROCESS ; LUNCH_PROCESS ; WORK_PROCESS ; RELAX_PROCESS ; DINNER_PROCESS ; SLEEP_PROCESS
+
+-- Processos para cada dia da semana
+MONDAY = DAY_PROCESS
+WEDNESDAY = DAY_PROCESS
+FRIDAY = DAY_PROCESS
+
+-- Processo principal que combina os dias da semana
+WEEK = MONDAY ; WEDNESDAY ; FRIDAY ; SKIP
