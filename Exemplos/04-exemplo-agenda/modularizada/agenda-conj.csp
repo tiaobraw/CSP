@@ -1,0 +1,32 @@
+include "types.csp"
+include "functions.csp"
+
+-------------------------------------------------------------------------------
+-- Canais e processos
+-------------------------------------------------------------------------------
+
+
+channel inserir : NOMES.TELEFONES
+channel consultar : NOMES.Set(TELEFONES)
+channel remover : NOMES
+channel modificar : NOMES.TELEFONES.TELEFONES
+
+AGENDA = Pagenda({})
+
+-- insere apenas telefones que nao estao associados a um contato
+-- consulta apenas os telefones dos contatos cadastrados
+-- remove contatos cadastrados
+-- modifica contatos cadastrados de forma que o novo numero seja diferente do atual
+Pagenda(contatos) = 
+	card(contatos) < MAX & 
+	 inserir?n?t:nao_associados(contatos, n) -> Pagenda(adi(contatos,n,t))
+	[]
+	consultar?n:nomes(contatos)!tels(contatos,n) -> Pagenda(contatos)
+	[]
+	remover?n:nomes(contatos) -> Pagenda(rem(contatos,n))
+	[]
+	modificar?n:nomes(contatos)
+			?t_atual:tels(contatos,n)
+			?t_novo:novos(contatos, n, t_atual) -> 
+			Pagenda(mod(contatos,n,t_atual,t_novo))
+	

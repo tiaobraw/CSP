@@ -1,0 +1,18 @@
+
+-- recebe um indice (posição) e uma sequencia
+-- retorna o elemento encontrado no indice
+-- indice inicia de 0
+element_at(0, <e>^tail) = e
+element_at(i, s) = element_at(i-1, tail(s))
+
+-- element_at(2,<1,2,3>)
+-- element_at(1, <2,3>)
+-- element_at(0, <3>)
+-- 3
+
+-- segunda versão da função
+element_at2(i, s) = 
+	if i == 0 then
+		head(s)
+	else
+		element_at2(i-1, tail(s))

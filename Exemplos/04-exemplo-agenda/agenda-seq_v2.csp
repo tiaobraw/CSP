@@ -1,0 +1,85 @@
+-------------------------------------------------------------------------------
+-- Tipos e constantes
+-------------------------------------------------------------------------------
+
+datatype NOMES = N1 | N2 | N3
+
+datatype TELEFONES = T1 | T2 | T3
+
+MAX = 3
+
+EXEMPLO_AGENDA = <(N1,T1), (N2,T2), (N3, T3)>
+
+-------------------------------------------------------------------------------
+-- Funções
+-------------------------------------------------------------------------------
+
+-- nas funcoes a seguir, contatos representa uma lista cujos elementos são tuplas
+-- na forma (n,t) onde n é do tipo NOMES e t é do tipo TELEFONES
+
+-- retorna o conjunto com todos os nomes da lista
+nomes(<>) = {}
+nomes(<(n,t)>^tail) = union({n}, nomes(tail))
+
+-- retorna a lista concatenando um novo contato no fim
+adi(contatos, n, t) = contatos^<(n,t)>
+
+-- retorna o conjunto dos telefones associados a um contato n
+tels(<>, n) = {}
+tels(<(nh,th)>^tail, n) = 
+	if ( nh == n ) then
+		union( {th} , tels(tail, n) )
+	else
+		tels(tail, n)
+
+-- retorna a lista sem o contato n
+rem(<>, n) = <>
+rem(<(nh,th)>^tail, n) = 
+		if( nh == n ) then
+			rem(tail, n)
+		else
+			<(nh,th)>^rem(tail, n)
+
+-- atualiza o numer t_atual para t_novo do contato n
+mod(<>, n, t_atual, t_novo) = <>
+mod(<(nh,th)>^tail, n, t_atual, t_novo) = 
+	if (nh == n and th == t_atual ) then
+		<(nh, t_novo)>^mod(tail, n, t_atual, t_novo)
+	else
+		<(nh,th)>^mod(tail, n, t_atual, t_novo)
+
+
+-- retorna o conjunto de numeros que nao estao associados a um contato
+nao_associados(contatos, n) = { t | t <- TELEFONES, not member(t,tels(contatos,n)) }
+
+-- retorna o conjunto de numeros que sao diferentes do numero atual do contato
+novos(contatos, n, t_atual) = { t | t <- TELEFONES, t != t_atual, not member(t, tels(contatos,n))  }
+
+-------------------------------------------------------------------------------
+-- Canais e processos
+-------------------------------------------------------------------------------
+
+channel inserir : NOMES.TELEFONES
+channel consultar : NOMES.Set(TELEFONES)
+channel remover : NOMES
+channel modificar : NOMES.TELEFONES.TELEFONES
+
+AGENDA = Pagenda(<>)
+
+-- insere apenas telefones que nao estao associados a um contato
+-- consulta apenas os telefones dos contatos cadastrados
+-- remove contatos cadastrados
+-- modifica contatos cadastrados de forma que o novo numero seja diferente do atual
+Pagenda(contatos) = 
+	#contatos < MAX & 
+	 inserir?n?t: nao_associados(contatos, n) -> Pagenda(adi(contatos,n,t))
+	[]
+	consultar?n:nomes(contatos)!tels(contatos,n) -> Pagenda(contatos)
+	[]
+	remover?n:nomes(contatos) -> Pagenda(rem(contatos,n))
+	[]
+	modificar?n:nomes(contatos)
+			?t_atual:tels(contatos,n)
+			?t_novo:novos(contatos, n, t_atual) -> 
+			Pagenda(mod(contatos,n,t_atual,t_novo))
+	

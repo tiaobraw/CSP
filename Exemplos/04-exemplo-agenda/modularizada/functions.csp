@@ -1,0 +1,33 @@
+	
+-------------------------------------------------------------------------------
+-- Funções
+-------------------------------------------------------------------------------
+
+-- nas funcoes a seguir, contatos representa um conjunto com tuplas
+-- na forma (n,t) onde n é do tipo NOMES e t é do tipo TELEFONES
+
+-- retorna um conjunto com todos os nomes do conjunto
+nomes(contatos) = { n | (n,t) <- contatos }
+
+-- retorna o conjunto dos telefones associados a um contato
+tels(contatos, n) = { t | (n_,t) <- contatos, n_ == n }
+
+-- retorna a lista com um novo contato adicionado como elemento
+adi(contatos, n, t) = union(contatos,{(n,t)})
+	
+-- remove um contato cujo n e fornecido
+rem(contatos, n) = { (n_,t) | (n_,t) <- contatos, n_ != n }
+
+-- muda o numero de um contato por outro
+mod(contatos, n, t_atual, t_novo) = 
+	let
+		outros = { (n_,t) | (n_,t) <- contatos, n_ != n, t != t_atual }
+	within
+		union(outros, {(n,t_novo)})
+		
+
+-- retorna o conjunto de numeros que nao estao associados a um contato
+nao_associados(contatos, n) = { t | t <- TELEFONES, not member(t,tels(contatos,n)) }
+
+-- retorna o conjunto de numeros que sao diferentes do numero atual do contato
+novos(contatos, n, t_atual) = { t | t <- TELEFONES, t != t_atual, not member(t, tels(contatos,n))  }
