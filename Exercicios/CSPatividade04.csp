@@ -1,0 +1,26 @@
+-- Igor e Sebastiao
+
+channel next, done
+channel condicao:Bool
+channel imprime:Int
+-- Recursive function to simulate a while loop
+While(P,c) =
+    if (c) then
+        P ; condicao?c -> While(P, c)
+    else
+        done -> SKIP
+
+Repeat(P,c) =
+    P ; While(P, c)
+
+Print(i) = imprime.i -> SKIP
+
+Foreach(P,l) = 
+    if (l == <>) then STOP
+    else P(head(l)) ; Foreach(P, tail(l))
+
+
+
+Main1 = While(SKIP,true)
+Main2 = Repeat(SKIP,true)
+Main3 = Foreach(Print,<1,2,3>)

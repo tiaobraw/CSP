@@ -1,4 +1,4 @@
--- Integrantes: Igor Isidoro e Sebastião Vieira
+-- Dupla Igor Isidoro e Sebastião Vieira
 
 -- Declaração dos canais
 channel pergunta : {0..9} -- Perguntas de 0 a 9
